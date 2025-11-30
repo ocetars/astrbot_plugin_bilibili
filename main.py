@@ -23,8 +23,13 @@ from .bili_client import BiliClient
 from .listener import DynamicListener
 from .data_manager import DataManager
 from .constant import (
-    VALID_FILTER_TYPES, BV, LOGO_PATH,
-    CARD_TEMPLATES, DEFAULT_TEMPLATE, get_template_names
+    VALID_FILTER_TYPES,
+    BV,
+    LOGO_PATH,
+    BANNER_PATH,
+    CARD_TEMPLATES,
+    DEFAULT_TEMPLATE,
+    get_template_names,
 )
 from .tools.bangumi import BangumiTool
 
@@ -61,7 +66,7 @@ class Main(Star):
     async def switch_style(self, event: AstrMessageEvent, style: str = None):
         """切换动态卡片样式。不带参数查看可用样式列表。"""
         available = get_template_names()
-        
+
         # 不带参数：显示可用样式列表
         if not style:
             lines = ["📋 可用的卡片样式："]
@@ -72,16 +77,16 @@ class Main(Star):
                 lines.append(f"    {info['description']}")
             lines.append(f"\n使用 /卡片样式 <样式名> 切换")
             return MessageEventResult().message("\n".join(lines))
-        
+
         # 带参数：切换样式
         if style not in available:
             return MessageEventResult().message(
                 f"样式 '{style}' 不存在。可用样式：{', '.join(available)}"
             )
-        
+
         self.style = style
         self.renderer.style = style
-        
+
         info = CARD_TEMPLATES[style]
         return MessageEventResult().message(f"✅ 已切换样式为：{info['name']} ({style})")
 
@@ -118,6 +123,7 @@ class Main(Star):
             online = video_data["online"]
 
             render_data = await create_render_data()
+            render_data["banner"] = await image_to_base64(BANNER_PATH)
             render_data["name"] = "AstrBot"
             render_data["avatar"] = await image_to_base64(LOGO_PATH)
             render_data["title"] = info["title"]
@@ -129,7 +135,7 @@ class Main(Star):
                 f"总共 {online['total']} 人正在观看"
             )
             render_data["image_urls"] = [info["pic"]]
-            render_data["type"] = "DYNAMIC_TYPE_AV" # 添加类型以便新模板正确渲染标签
+            render_data["type"] = "DYNAMIC_TYPE_AV"  # 添加类型以便新模板正确渲染标签
 
             img_path = await self.renderer.render_dynamic(render_data)
             if img_path:
@@ -208,6 +214,8 @@ class Main(Star):
                 filter_desc += f"<br>过滤正则: {filter_regex}"
 
             render_data = await create_render_data()
+            render_data["banner"] = await image_to_base64(BANNER_PATH)
+            render_data["uid"] = uid
             render_data["name"] = "AstrBot"
             render_data["avatar"] = await image_to_base64(LOGO_PATH)
             render_data["text"] = (

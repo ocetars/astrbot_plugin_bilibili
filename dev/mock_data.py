@@ -3,12 +3,31 @@ UI 开发模式 - 模拟数据模块
 提供各种动态类型和元数据组合的模拟数据，用于 UI 开发和测试
 """
 
+import os
 import base64
 import io
 from typing import Dict, Any, List, Optional
 import qrcode
 
 # ==================== 基础工具函数 ====================
+
+# 获取 banner 图片的 base64
+CURRENT_DIR = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.dirname(CURRENT_DIR)
+BANNER_PATH = os.path.join(PROJECT_ROOT, "assets", "banner.png")
+
+
+def load_banner_base64() -> str:
+    """加载 banner 图片为 base64"""
+    if os.path.exists(BANNER_PATH):
+        with open(BANNER_PATH, "rb") as f:
+            base64_str = base64.b64encode(f.read()).decode("utf-8")
+            return f"data:image/png;base64,{base64_str}"
+    return ""
+
+
+BANNER_BASE64 = load_banner_base64()
+
 
 def create_qrcode_sync(url: str) -> str:
     """同步生成二维码 Base64"""
@@ -40,6 +59,8 @@ def create_base_render_data() -> Dict[str, Any]:
         "title": "",
         "type": "",
         "forward": None,
+        "banner": BANNER_BASE64,
+        "uid": "",
     }
 
 

@@ -18,6 +18,13 @@
         "hint": "是否以图片形式渲染输出(仅对图文动态生效)",
         "default": true
     },
+    "style": {
+        "description": "卡片样式",
+        "type": "string",
+        "hint": "渲染卡片的样式模板",
+        "options": ["modern", "classic"],
+        "default": "modern"
+    },
     "node": {
         "description": "node",
         "type": "bool",
